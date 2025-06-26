@@ -1,65 +1,87 @@
-import os, sys, random
+######################################################################################
+### Author/Developer: Kavya Kokkiligadda
+### Filename: gen_rec.py
+### Version: 1.0
+### Description: Converts Pascal VOC XML annotations into MXNet-compatible .lst files
+###              for object detection tasks. Generates train.lst and val.lst.
+######################################################################################
+
+import os
+import random
 import xml.etree.ElementTree as ET
-import mxnet as mx
 
-
+# Define classes and dataset path
 classes = ["RBC", "WBC", "Platelets"]
-ratio = 0.9
-path = '../../BCCD'
+dataset_path = "../../BCCD"
+train_split_ratio = 0.9  # 90% for training, 10% for validation
 
+def generate_lst_files(classes, base_dir, ratio=1.0):
+    assert 0 <= ratio <= 1, "Ratio must be between 0 and 1"
 
-def gen_det_rec(classes, dataset_dir, ratio=1):
-    assert ratio <= 1 and ratio >= 0
-    img_dir = os.path.join(dataset_dir, "JPEGImages")
-    label_dir = os.path.join(dataset_dir, "Annotations")
-    img_names = os.listdir(img_dir)
-    img_names.sort()
-    label_names = os.listdir(label_dir)
-    label_names.sort()
-    file_num = len(img_names)
-    assert file_num==len(label_names)
+    images_dir = os.path.join(base_dir, "JPEGImages")
+    annotations_dir = os.path.join(base_dir, "Annotations")
 
-    idx_random = list(range(file_num))
-    random.shuffle(idx_random)
-    idx_train=idx_random[:int(file_num*ratio)+1]
-    idx_val=idx_random[int(file_num*ratio)+1:]
+    image_files = sorted(os.listdir(images_dir))
+    annotation_files = sorted(os.listdir(annotations_dir))
 
-    with open("train.lst", "w") as train_lst:
-        print("Writing in train.lst...")
-        if idx_val:
-            with open("val.lst", "w") as val_lst:
-                print("Writing in val.lst...")
+    assert len(image_files) == len(annotation_files), "Mismatch between images and annotations"
 
-                for idx in range(file_num):
-                    each_img_path = os.path.join(img_dir, img_names[idx])
-                    each_label_path = os.path.join(label_dir, label_names[idx])
-                    tree = ET.parse(each_label_path)
-                    root = tree.getroot()
-                    size = root.find('size')
-                    width = float(size.find('width').text)
-                    height = float(size.find('height').text)
-                    label = []
-                    label.append(str(idx))
-                    label.append('4\t5\t'+str(width)+'\t'+str(height))
-                    
-                    for obj in root.iter('object'):
-                        cls_name = obj.find('name').text
-                        if cls_name not in classes:
-                            continue
-                        cls_id = classes.index(cls_name)
-                        xml_box = obj.find('bndbox')
-                        xmin = float(xml_box.find('xmin').text) / width
-                        ymin = float(xml_box.find('ymin').text) / height
-                        xmax = float(xml_box.find('xmax').text) / width
-                        ymax = float(xml_box.find('ymax').text) / height
-                        for i in [cls_id, xmin, ymin, xmax, ymax]:
-                            label.append(str(i))
+    total = len(image_files)
+    indices = list(range(total))
+    random.shuffle(indices)
 
-                    label.append(each_img_path)
-                    label = '\t'.join(label)
-                    if idx in idx_train:
-                        train_lst.write(label+'\n')
-                    else:
-                        val_lst.write(label+'\n')
+    train_indices = indices[:int(total * ratio)]
+    val_indices = indices[int(total * ratio):]
 
-gen_det_rec(classes, path, ratio)
+    with open("train.lst", "w") as train_f:
+        print("📄 Writing train.lst...")
+
+        val_f = open("val.lst", "w") if val_indices else None
+        if val_f:
+            print("📄 Writing val.lst...")
+
+        for idx in range(total):
+            img_name = image_files[idx]
+            xml_name = annotation_files[idx]
+
+            img_path = os.path.join(images_dir, img_name)
+            xml_path = os.path.join(annotations_dir, xml_name)
+
+            tree = ET.parse(xml_path)
+            root = tree.getroot()
+
+            width = float(root.find("size/width").text)
+            height = float(root.find("size/height").text)
+
+            record = [str(idx), f"4\t5\t{width}\t{height}"]
+
+            for obj in root.iter("object"):
+                label = obj.find("name").text
+                if label not in classes:
+                    continue
+
+                class_id = classes.index(label)
+                bndbox = obj.find("bndbox")
+                xmin = float(bndbox.find("xmin").text) / width
+                ymin = float(bndbox.find("ymin").text) / height
+                xmax = float(bndbox.find("xmax").text) / width
+                ymax = float(bndbox.find("ymax").text) / height
+
+                record += [str(class_id), str(xmin), str(ymin), str(xmax), str(ymax)]
+
+            record.append(img_path)
+            final_line = "\t".join(record) + "\n"
+
+            if idx in train_indices:
+                train_f.write(final_line)
+            else:
+                if val_f:
+                    val_f.write(final_line)
+
+        if val_f:
+            val_f.close()
+
+    print("✅ .lst generation complete.")
+
+# Run the function
+generate_lst_files(classes, dataset_path, train_split_ratio)

@@ -1,43 +1,51 @@
-#!/bin/python
-"""generate labeled img like example.jpg"""
+######################################################################################
+### Author/Developer: Kavya Kokkiligadda
+### Filename: visualize_one.py
+### Version: 1.0
+### Description: Generates labeled image from a single Pascal VOC XML annotation.
+### Output: Displays and saves a labeled image with bounding boxes and class names.
+######################################################################################
 
 import xml.etree.ElementTree as ET
 import cv2
 
-image = cv2.imread("../BCCD/JPEGImages/BloodImage_00023.jpg")
+# Set image and annotation path
+image_path = "../BCCD/JPEGImages/BloodImage_00023.jpg"
+annotation_path = "Annotations/BloodImage_00023.xml"
 
-tree = ET.parse("Annotations/BloodImage_00023.xml")
-for elem in tree.iter():
-	if 'object' in elem.tag or 'part' in elem.tag:
-		for attr in list(elem):
-			if 'name' in attr.tag:
-				name = attr.text
-			if 'bndbox' in attr.tag:
-				for dim in list(attr):
-					if 'xmin' in dim.tag:
-						xmin = int(round(float(dim.text)))
-					if 'ymin' in dim.tag:
-						ymin = int(round(float(dim.text)))
-					if 'xmax' in dim.tag:
-						xmax = int(round(float(dim.text)))
-					if 'ymax' in dim.tag:
-						ymax = int(round(float(dim.text)))
-				if name[0] == "R":
-					cv2.rectangle(image, (xmin, ymin),
-								(xmax, ymax), (0, 255, 0), 1)
-					cv2.putText(image, name, (xmin + 10, ymin + 15),
-							cv2.FONT_HERSHEY_SIMPLEX, 1e-3 * image.shape[0], (0, 255, 0), 1)
-				if name[0] == "W":
-					cv2.rectangle(image, (xmin, ymin),
-								(xmax, ymax), (0, 0, 255), 1)
-					cv2.putText(image, name, (xmin + 10, ymin + 15),
-							cv2.FONT_HERSHEY_SIMPLEX, 1e-3 * image.shape[0], (0, 0, 255), 1)
-				if name[0] == "P":
-					cv2.rectangle(image, (xmin, ymin),
-								(xmax, ymax), (255, 0, 0), 1)
-					cv2.putText(image, name, (xmin + 10, ymin + 15),
-							cv2.FONT_HERSHEY_SIMPLEX, 1e-3 * image.shape[0], (255, 0, 0), 1)
+# Load image
+image = cv2.imread(image_path)
 
-cv2.imshow("test", image)
+# Parse XML file
+tree = ET.parse(annotation_path)
+root = tree.getroot()
+
+# Iterate over objects and draw bounding boxes
+for obj in root.iter("object"):
+    name = obj.find("name").text
+    bndbox = obj.find("bndbox")
+    xmin = int(float(bndbox.find("xmin").text))
+    ymin = int(float(bndbox.find("ymin").text))
+    xmax = int(float(bndbox.find("xmax").text))
+    ymax = int(float(bndbox.find("ymax").text))
+
+    # Choose color based on class
+    if name.startswith("R"):
+        color = (0, 255, 0)   # Green for RBC
+    elif name.startswith("W"):
+        color = (0, 0, 255)   # Red for WBC
+    elif name.startswith("P"):
+        color = (255, 0, 0)   # Blue for Platelets
+    else:
+        color = (0, 255, 255) # Yellow for unknown
+
+    # Draw rectangle and label
+    cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 1)
+    cv2.putText(image, name, (xmin + 10, ymin + 15),
+                cv2.FONT_HERSHEY_SIMPLEX, 1e-3 * image.shape[0], color, 1)
+
+# Show and save image
+cv2.imshow("Labeled Image", image)
 cv2.imwrite("test.jpg", image)
-cv2.waitKey()
+cv2.waitKey(0)
+cv2.destroyAllWindows()

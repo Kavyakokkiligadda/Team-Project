@@ -1,46 +1,44 @@
 ######################################################################################
-### Author/Developer: Nicolas CHEN
+### Author/Developer: Kavya Kokkiligadda
 ### Filename: export.py
 ### Version: 1.0
-### Field of research: Deep Learning in medical imaging
-### Purpose: This Python script creates the CSV file from XML files.
-### Output: This Python script creates the file "test.csv"
-### with all data needed: filename, class_name, x1,y1,x2,y2
-
-######################################################################################
-### HISTORY
-### Version | Date          | Author       | Evolution 
-### 1.0     | 17/11/2018    | Nicolas CHEN | Initial version 
+### Description: Generates a CSV file from XML annotations in Pascal VOC format.
+### Each record includes: filename, cell type, and bounding box coordinates.
 ######################################################################################
 
-import os, sys, random
+import os
 import xml.etree.ElementTree as ET
 from glob import glob
 import pandas as pd
-from shutil import copyfile
 
-annotations = glob('BCCD/Annotations/*.xml')
+# Collect all XML annotation files
+annotation_files = glob('BCCD/Annotations/*.xml')
 
-df = []
-cnt = 0
-for file in annotations:
-    #filename = file.split('/')[-1].split('.')[0] + '.jpg'
-    #filename = str(cnt) + '.jpg'
-    filename = file.split('\\')[-1]
-    filename =filename.split('.')[0] + '.jpg'
-    row = []
-    parsedXML = ET.parse(file)
-    for node in parsedXML.getroot().iter('object'):
-        blood_cells = node.find('name').text
-        xmin = int(node.find('bndbox/xmin').text)
-        xmax = int(node.find('bndbox/xmax').text)
-        ymin = int(node.find('bndbox/ymin').text)
-        ymax = int(node.find('bndbox/ymax').text)
+# List to hold extracted data
+records = []
 
-        row = [filename, blood_cells, xmin, xmax, ymin, ymax]
-        df.append(row)
-        cnt += 1
+# Process each XML file
+for xml_file in annotation_files:
+    # Derive image filename from XML filename
+    base_name = os.path.basename(xml_file).replace('.xml', '.jpg')
 
-data = pd.DataFrame(df, columns=['filename', 'cell_type', 'xmin', 'xmax', 'ymin', 'ymax'])
+    # Parse the XML file
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
 
-data[['filename', 'cell_type', 'xmin', 'xmax', 'ymin', 'ymax']].to_csv('test.csv', index=False)
+    # Extract object details
+    for obj in root.findall('object'):
+        label = obj.find('name').text
+        xmin = int(obj.find('bndbox/xmin').text)
+        xmax = int(obj.find('bndbox/xmax').text)
+        ymin = int(obj.find('bndbox/ymin').text)
+        ymax = int(obj.find('bndbox/ymax').text)
+
+        # Add the row to the records list
+        records.append([base_name, label, xmin, xmax, ymin, ymax])
+
+# Create a DataFrame from the extracted data
+df = pd.DataFrame(records, columns=['filename', 'cell_type', 'xmin', 'xmax', 'ymin', 'ymax'])
+
+# Export the DataFrame to CSV
+df.to_csv('test.csv', index=False)

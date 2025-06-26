@@ -1,59 +1,58 @@
-# -*- coding: utf-8 -*-
-import os
-import argparse as ap
+######################################################################################
+### Author/Developer: Kavya Kokkiligadda
+### Filename: split.py
+### Version: 1.0
+### Description: Splits image filenames into train, val, test, and trainval sets.
+### Output: Four files (train.txt, val.txt, test.txt, trainval.txt) under ImageSets/Main
+######################################################################################
+
+import os 
+import argparse
 import random
 import math
 
-BCCD_Path = "../BCCD/JPEGImages/"
-Out_Path = "../BCCD/ImageSets/Main/"
+# Default paths
+DEFAULT_IMAGE_DIR = "../BCCD/JPEGImages/"
+DEFAULT_OUTPUT_DIR = "../BCCD/ImageSets/Main/"
+
+def create_split_files(images_dir, output_dir, trainval_ratio=0.9, train_ratio=0.8):
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Get list of image base names (without extension)
+    all_images = [img.split('.')[0] for img in os.listdir(images_dir)]
+    random.shuffle(all_images)
+
+    total = len(all_images)
+    trainval_count = math.ceil(trainval_ratio * total)
+    train_count = math.ceil(trainval_count * train_ratio)
+
+    trainval_set = sorted(all_images[:trainval_count])
+    test_set     = sorted(all_images[trainval_count:])
+    train_set    = sorted(trainval_set[:train_count])
+    val_set      = sorted(trainval_set[train_count:])
+
+    # Mapping output filenames to data
+    sets = {
+        "trainval.txt": trainval_set,
+        "train.txt": train_set,
+        "val.txt": val_set,
+        "test.txt": test_set
+    }
+
+    # Write to files
+    for filename, data in sets.items():
+        with open(os.path.join(output_dir, filename), "w") as f:
+            for line in data:
+                f.write(f"{line}\n")
+
+    # Console summary
+    print(f"Total: {total} | TrainVal: {len(trainval_set)} | Test: {len(test_set)} | Train: {len(train_set)} | Val: {len(val_set)}")
 
 if __name__ == "__main__":
-    # Argument Parser
-    parser = ap.ArgumentParser()
-    parser.add_argument("--images", help="Path to images",
-                        default=BCCD_Path)
-    parser.add_argument("--output", help="Path to output directory",
-                        default=Out_Path)
-    args = vars(parser.parse_args())
+    parser = argparse.ArgumentParser(description="Split image dataset for training and validation.")
+    parser.add_argument("--images", default=DEFAULT_IMAGE_DIR, help="Directory containing JPEG images.")
+    parser.add_argument("--output", default=DEFAULT_OUTPUT_DIR, help="Directory to save split text files.")
+    args = parser.parse_args()
 
-    images_path = args["images"]
-    output_dir = args["output"]
-    trainval_rate = 0.9
-    train_rate = 0.8
-
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    images_names = os.listdir(images_path)
-    images_list = []
-    for img in images_names:
-        images_list.append(img.split('.')[0])
-    random.shuffle(images_list)
-    annotation_num = len(images_list)
-    trainval_num = int(math.ceil(trainval_rate * annotation_num))
-    train_num = int(math.ceil(trainval_num * train_rate))
-    trainval = images_list[0:trainval_num]
-    test = images_list[trainval_num:]
-    train = trainval[0:train_num]
-    val = trainval[train_num:trainval_num]
-    trainval = sorted(trainval)
-    train = sorted(train)
-    val = sorted(val)
-    test = sorted(test)
-    fout = open(os.path.join(output_dir, "trainval.txt"), 'w')
-    for line in trainval:
-        fout.write(line + "\n")
-    fout.close()
-    fout = open(os.path.join(output_dir, "train.txt"), 'w')
-    for line in train:
-        fout.write(line + "\n")
-    fout.close()
-    fout = open(os.path.join(output_dir, "val.txt"), 'w')
-    for line in val:
-        fout.write(line + "\n")
-    fout.close()
-    fout = open(os.path.join(output_dir, "test.txt"), 'w')
-    for line in test:
-        fout.write(line + "\n")
-    fout.close()
-    print annotation_num, len(trainval), len(test), len(train), len(val)
-
+    create_split_files(args.images, args.output)
