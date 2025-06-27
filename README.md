@@ -89,9 +89,3 @@ Also compatible with MXNet via `.rec` file conversion and `ImageDetIter`.
 
 ---
 
-## 📜 License
-
-Distributed under the MIT License.
-
-Developed and organized by Kavya. You are free to use, modify, and share this for academic or commercial purposes, following the license terms.
-
