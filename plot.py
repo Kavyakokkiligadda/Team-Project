@@ -25,7 +25,7 @@ def get_image_files(folder_path, file_ext):
     return files, len(files)  # Return the list and count
 
 # Load image file names from the target directory
-image_files, total_images = get_image_files("BCCD/JPEGImages", "jpg")  # Get all .jpg files
+image_files, total_images = get_image_files("BCCD/JPEImages", "jpg")  # Get all .jpg files
 
 # Load annotation CSV
 Annotation = pd.read_csv("test-.csv", header=None)  # Load CSV without header
@@ -37,7 +37,7 @@ for img_name in image_files:  # Loop through all image files
     ax = fig.add_axes([0, 0, 1, 1])  # Use entire figure for plotting
     plt.axis('off')  # Hide axis
 
-    img_path = os.path.join("BCCD/JPEGImages", img_name)  # Build full path to image
+    img_path = os.path.join("BCCD/JPEImages", img_name)  # Build full path to image
     image = plt.imread(img_path)  # Read image
     plt.imshow(image)  # Display image
 

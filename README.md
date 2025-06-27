@@ -11,7 +11,7 @@ BCCD_Dataset/
 ├── BCCD/
 │   ├── Annotation/       # XML annotation files (bounding boxes)
 │   ├── ImageSets/         # Train/test/val split text files
-│   └── JPEGImages/        # Input images
+│   └── JPEImages/        # Input images
 ├── dataset/
 │   └── mxnet/             # MXNet processing utilities
 ├── scripts/

@@ -10,7 +10,7 @@ import argparse  # For handling command-line arguments
 import random  # For shuffling image list
 import math  # For rounding up split counts
 # Default paths
-DEFAULT_IMAGE_DIR = "../BCCD/JPEGImages/"  # Path to images
+DEFAULT_IMAGE_DIR = "../BCCD/JPEImages/"  # Path to images
 DEFAULT_OUTPUT_DIR = "../BCCD/ImageSets/Main/"  # Output path for split files
 
 def create_split_files(images_dir, output_dir, trainval_ratio=0.9, train_ratio=0.8):

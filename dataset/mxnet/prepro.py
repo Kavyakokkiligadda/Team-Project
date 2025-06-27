@@ -18,7 +18,7 @@ train_split_ratio = 0.9  # 90% for training, 10% for validation
 def generate_lst_files(classes, base_dir, ratio=1.0):
     assert 0 <= ratio <= 1, "Ratio must be between 0 and 1"
 
-    images_dir = os.path.join(base_dir, "JPEGImages")
+    images_dir = os.path.join(base_dir, "JPEImages")
     Annotation_dir = os.path.join(base_dir, "Annotation")
 
     image_files = sorted(os.listdir(images_dir))

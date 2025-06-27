@@ -1,7 +1,7 @@
 <annotation>
-	<folder>JPEGImages</folder>
+	<folder>JPEImages</folder>
 	<filename>BloodImage_00251.jpg</filename>
-	<path>/home/pi/detection_dataset/JPEGImages/BloodImage_00251.jpg</path>
+	<path>/home/pi/detection_dataset/JPEImages/BloodImage_00251.jpg</path>
 	<source>
 		<database>Unknown</database>
 	</source>

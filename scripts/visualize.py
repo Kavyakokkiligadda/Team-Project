@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET  # For parsing XML annotation files
 import cv2  # OpenCV for image processing and visualization
 
 # Set image and annotation path
-image_path = "../BCCD/JPEGImages/BloodImage_00023.jpg"  # Path to the image
+image_path = "../BCCD/JPEImages/BloodImage_00023.jpg"  # Path to the image
 annotation_path = "Annotation/BloodImage_00023.xml"  # Path to the corresponding annotation file
 
 # Load image
