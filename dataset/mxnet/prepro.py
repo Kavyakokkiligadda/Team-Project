@@ -1,8 +1,8 @@
 ######################################################################################
-### Author/Developer: Kavya Kokkiligadda
+### 
 ### Filename: gen_rec.py
 ### Version: 1.0
-### Description: Converts Pascal VOC XML annotations into MXNet-compatible .lst files
+### Description: Converts Pascal VOC XML Annotation into MXNet-compatible .lst files
 ###              for object detection tasks. Generates train.lst and val.lst.
 ######################################################################################
 
@@ -19,12 +19,12 @@ def generate_lst_files(classes, base_dir, ratio=1.0):
     assert 0 <= ratio <= 1, "Ratio must be between 0 and 1"
 
     images_dir = os.path.join(base_dir, "JPEGImages")
-    annotations_dir = os.path.join(base_dir, "Annotations")
+    Annotation_dir = os.path.join(base_dir, "Annotation")
 
     image_files = sorted(os.listdir(images_dir))
-    annotation_files = sorted(os.listdir(annotations_dir))
+    annotation_files = sorted(os.listdir(Annotation_dir))
 
-    assert len(image_files) == len(annotation_files), "Mismatch between images and annotations"
+    assert len(image_files) == len(annotation_files), "Mismatch between images and Annotation"
 
     total = len(image_files)
     indices = list(range(total))
@@ -45,7 +45,7 @@ def generate_lst_files(classes, base_dir, ratio=1.0):
             xml_name = annotation_files[idx]
 
             img_path = os.path.join(images_dir, img_name)
-            xml_path = os.path.join(annotations_dir, xml_name)
+            xml_path = os.path.join(Annotation_dir, xml_name)
 
             tree = ET.parse(xml_path)
             root = tree.getroot()
