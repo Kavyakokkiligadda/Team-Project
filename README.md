@@ -1,6 +1,6 @@
 # 🧬 BCCD Blood Cell Detection Dataset
 
-This project is focused on identifying and labeling human blood cells in microscope images using object detection techniques. The dataset has been arranged in Pascal VOC format and includes image annotations for three major blood cell types.
+This project is focused on identifying and labeling human blood cells in microscope images using object detection techniques. The dataset has been arranged in Pascal VOC format and includes image Annotation for three major blood cell types.
 
 ---
 
@@ -9,7 +9,7 @@ This project is focused on identifying and labeling human blood cells in microsc
 ```
 BCCD_Dataset/
 ├── BCCD/
-│   ├── Annotations/       # XML annotation files (bounding boxes)
+│   ├── Annotation/       # XML annotation files (bounding boxes)
 │   ├── ImageSets/         # Train/test/val split text files
 │   └── JPEGImages/        # Input images
 ├── dataset/
@@ -40,13 +40,13 @@ Each label is annotated with bounding boxes in VOC format XML files.
 ## 🛠️ Script Descriptions
 
 ### `export.py`
-Converts the annotated XML files into a structured CSV (`test.csv`) with the following columns:
+Converts the annotated XML files into a structured CSV (`test-.csv`) with the following columns:
 - Filename
 - Class label
 - Coordinates (x1, y1, x2, y2)
 
 ### `plot.py`
-Uses `test.csv` to visualize bounding boxes on each image and saves them in a new output directory.
+Uses `test-.csv` to visualize bounding boxes on each image and saves them in a new output directory.
 
 ---
 

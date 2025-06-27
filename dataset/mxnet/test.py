@@ -1,5 +1,5 @@
 ######################################################################################
-### Author/Developer: Kavya Kokkiligadda
+### 
 ### Filename: visualize_batch.py
 ### Version: 1.0
 ### Description: Loads and visualizes batches from .rec files using MXNet's ImageDetIter.
