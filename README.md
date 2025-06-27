@@ -20,7 +20,6 @@ BCCD_Dataset/
 ├── export.py              # Converts VOC XML to CSV format
 ├── plot.py                # Plots bounding boxes using CSV
 ├── example.jpg            # Sample output visualization
-├── LICENSE
 └── README.md
 ```
 
