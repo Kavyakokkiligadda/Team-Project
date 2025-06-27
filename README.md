@@ -89,3 +89,4 @@ Also compatible with MXNet via `.rec` file conversion and `ImageDetIter`.
 
 ---
 
+[📄 View Project PDF on Google Drive](https://drive.google.com/file/d/1fm-U_yhKdk9TwT8hzplfy4dX-T7ysyFM/view?usp=drivesdk)
